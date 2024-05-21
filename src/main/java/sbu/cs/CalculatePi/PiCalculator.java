@@ -1,7 +1,9 @@
 package sbu.cs.CalculatePi;
 
+import java.awt.geom.QuadCurve2D;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -16,64 +18,90 @@ public class PiCalculator {
         public Part(int part, int floatingPoint){
             this.part = part;
             this.FloatingPoint = floatingPoint;
-            roundedMc= new MathContext(floatingPoint+1);
+            roundedMc = new MathContext(floatingPoint+1, RoundingMode.FLOOR);
         }
 
 
         public static synchronized void addToPi(BigDecimal num) {
-            Pi = Pi.add(num);
+
+            Pi = Pi.add(num,mc);
         }
 
         @Override
         public void run() {
-            BigDecimal sum1 = new BigDecimal("0");
-            BigDecimal sum2 = new BigDecimal("0");
-            BigDecimal sum3 = new BigDecimal("0");
-            BigDecimal sum4 = new BigDecimal("0");
+            BigDecimal sum1 = new BigDecimal("1");
+            BigDecimal sum2 = new BigDecimal("1");
+            BigDecimal sum3 = new BigDecimal("1");
 
             BigDecimal one = new BigDecimal("1");
-            BigDecimal denominator = new BigDecimal("3");
-            BigDecimal eight = new BigDecimal("8");
-            BigDecimal minus = new BigDecimal("-1");
+            BigDecimal two = new BigDecimal("2");
+            BigDecimal T = new BigDecimal("1");
+            int loop=16000;
 
             if (part == 1) {
-                for (int i = 0; i < Math.pow(2,15); i++) {
-                    sum1 = sum1.add(one.divide(denominator, mc),mc);
-                    denominator = denominator.add(eight);
+                for (int i = 0; i < loop/4; i++) {
+                    sum1 = new BigDecimal("1");
+                    sum2 = new BigDecimal("1");
+                    sum3 = new BigDecimal("1");
+                    T = new BigDecimal("1");
+
+                    for (int j=1 ; j<=i; j++){
+                        sum1 = sum1.multiply(new BigDecimal(j),mc);
+                    }
+                    sum1 = sum1.pow(2);
+                    sum2 = two.pow(i+1);
+
+                    sum3 = two.multiply(new BigDecimal(i),mc).add(one,mc);
+                    for (int j=1; j<=sum3.intValue() ; j++ ){
+                        T = T.multiply(new BigDecimal(j),mc);
+                    }
+                    addToPi(sum1.multiply(sum2,mc).divide(T,mc));
                 }
-                addToPi(sum1.multiply(minus));
             }
             if (part == 2) {
-                denominator = new BigDecimal("5");
-                for (int i = 0; i < Math.pow(2,15); i++) {
-                    sum2 = sum2.add(one.divide(denominator, mc), mc);
-                    denominator = denominator.add(eight);
+                for (int i = loop/4 ;i <loop/2; i++) {
+                    for (int j=1 ; j<=i; j++){
+                        sum1 = sum1.multiply(new BigDecimal(j),mc);
+                    }
+                    sum2 = two.pow(i+1);
+                    sum3 = two.multiply(new BigDecimal(i),mc).add(one,mc);
+                    for (int j=1; j<=sum3.intValue() ; j++ ){
+                        T = T.multiply(new BigDecimal(j),mc);
+                    }
+                    addToPi(sum1.multiply(sum2,mc).divide(T,mc));
                 }
-                addToPi(sum2);
             }
             if (part == 3) {
-                denominator = new BigDecimal("7");
-                for (int i = 0; i < Math.pow(2,15); i++) {
-                    sum3 = sum3.add(one.divide(denominator, mc), mc);
-                    denominator = denominator.add(eight);
+                for (int i = loop/2; i < loop*3/4; i++) {
+                    for (int j=1 ; j<=i; j++){
+                        sum1 = sum1.multiply(new BigDecimal(j),mc);
+                    }
+                    sum2 = two.pow(i+1);
+                    sum3 = two.multiply(new BigDecimal(i),mc).add(one,mc);
+                    for (int j=1; j<=sum3.intValue() ; j++ ){
+                        T = T.multiply(new BigDecimal(j),mc);
+                    }
+                    addToPi(sum1.multiply(sum2,mc).divide(T,mc));
                 }
-                addToPi(sum3.multiply(minus));
-
             }
             if (part == 4) {
-                denominator = new BigDecimal("9");
-                for (int i = 0; i < Math.pow(2,15); i++) {
-                    sum4 = sum4.add(one.divide(denominator, mc), mc);
-                    denominator = denominator.add(eight);
+                for (int i = loop*3/4; i < loop; i++) {
+                    for (int j=1 ; j<=i; j++){
+                        sum1 = sum1.multiply(new BigDecimal(j),mc);
+                    }
+                    sum2 = two.pow(i+1);
+                    sum3 = two.multiply(new BigDecimal(i),mc).add(one,mc);
+                    for (int j=1; j<=sum3.intValue() ; j++ ){
+                        T = T.multiply(new BigDecimal(j),mc);
+                    }
+                    addToPi(sum1.multiply(sum2,mc).divide(T,mc));
                 }
-                addToPi(sum4);
             }
-
         }
     }
 
     public static String calculate(int floatingPoint) {
-        ExecutorService pool = Executors.newFixedThreadPool(4);;
+        ExecutorService pool = Executors.newFixedThreadPool(3);;
 
         Part part1 = new Part(1,floatingPoint);
         Thread task1 = new Thread(part1);
@@ -98,15 +126,11 @@ public class PiCalculator {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
-        BigDecimal one = new BigDecimal("1");
-        BigDecimal four = new BigDecimal("4");
-        Part.Pi = Part.Pi.add(one).multiply(four,Part.mc);
         return Part.Pi.round(Part.roundedMc).toString();
     }
 
     public static void main(String[] args) {
-        System.out.println(PiCalculator.calculate(8));
+        System.out.println(PiCalculator.calculate(9));
     }
 }
 
