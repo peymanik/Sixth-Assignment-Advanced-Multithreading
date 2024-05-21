@@ -72,42 +72,42 @@ public class PiCalculator {
         }
     }
 
-    public static String calculate(int floatingPoint) {
-        ExecutorService pool = Executors.newFixedThreadPool(4);;
+        public static String calculate(int floatingPoint) {
+            ExecutorService pool = Executors.newFixedThreadPool(4);;
 
-        Part part1 = new Part(1,floatingPoint);
-        Thread task1 = new Thread(part1);
-        pool.execute(task1);
+            Part part1 = new Part(1,floatingPoint);
+            Thread task1 = new Thread(part1);
+            pool.execute(task1);
 
-        Part part2 = new Part(2,floatingPoint);
-        Thread task2 = new Thread(part2);
-        pool.execute(task2);
+            Part part2 = new Part(2,floatingPoint);
+            Thread task2 = new Thread(part2);
+            pool.execute(task2);
 
-        Part part3 = new Part(3,floatingPoint);
-        Thread task3 = new Thread(part3);
-        pool.execute(task3);
+            Part part3 = new Part(3,floatingPoint);
+            Thread task3 = new Thread(part3);
+            pool.execute(task3);
 
-        Part part4 = new Part(4,floatingPoint);
-        Thread task4 = new Thread(part4);
-        pool.execute(task4);
+            Part part4 = new Part(4,floatingPoint);
+            Thread task4 = new Thread(part4);
+            pool.execute(task4);
 
-        pool.shutdown();
+            pool.shutdown();
 
-        try {
-            boolean finished = pool.awaitTermination(2, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            try {
+                boolean finished = pool.awaitTermination(2, TimeUnit.MINUTES);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            BigDecimal one = new BigDecimal("1");
+            BigDecimal four = new BigDecimal("4");
+            Part.Pi = Part.Pi.add(one).multiply(four,Part.mc);
+            return Part.Pi.round(Part.roundedMc).toString();
         }
 
-        BigDecimal one = new BigDecimal("1");
-        BigDecimal four = new BigDecimal("4");
-        Part.Pi = Part.Pi.add(one).multiply(four,Part.mc);
-        return Part.Pi.round(Part.roundedMc).toString();
+        public static void main(String[] args) {
+            System.out.println(PiCalculator.calculate(8));
+        }
     }
-
-    public static void main(String[] args) {
-        System.out.println(PiCalculator.calculate(8));
-    }
-}
 
 
