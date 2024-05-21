@@ -68,7 +68,8 @@ public class PiCalculator {
         }
     }
     public static String calculate(int floatingPoint) {
-        ExecutorService pool = Executors.newFixedThreadPool(3);;
+        ExecutorService pool = Executors.newFixedThreadPool(3);
+        Part.Pi = new BigDecimal("0");
 
         Part part1 = new Part(1,floatingPoint);
         Part part2 = new Part(2,floatingPoint);
@@ -95,7 +96,8 @@ public class PiCalculator {
     }
 
     public static void main(String[] args) {
-        System.out.println(PiCalculator.calculate(9));
+        System.out.println(PiCalculator.calculate(2));
+
     }
 }
 
